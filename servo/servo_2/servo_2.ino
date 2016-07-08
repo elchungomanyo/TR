@@ -70,13 +70,14 @@ void loop(void) {
   }
   else if(fsrReading >= 300)
   {
+    servo1.write(servoAngle);
+    delay(1000);
     dataFile = SD.open("data.txt", FILE_WRITE);
     dataFile.println(fsrReading);
     dataFile.close();
     digitalWrite(LEDpin, LOW);
     servoAngle = 180;
-    servo1.write(servoAngle);
-    delay(1000);
+    
   }
   else if(fsrReading > 0 && fsrReading < 100)
   {
