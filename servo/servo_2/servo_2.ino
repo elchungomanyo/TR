@@ -6,10 +6,10 @@ Servo servo1;
 File dataFile;
 
 const int fsrAnalogPin = 0;
-const int servoPin = 11;
+const int servoPin = 9;
 const int minPulse = 1000;
 const int maxPulse = 2900;
-const int LEDpin = 13;
+const int LEDpin = 8;
 
 int fsrReading;
 int servoAngle;
@@ -18,6 +18,7 @@ int firstTime;
 void setup(void) {
   servo1.attach(servoPin, minPulse, maxPulse);
   Serial.begin(9600);
+  digitalWrite(LEDpin, LOW);
   while (!Serial) {
     ;
   }
@@ -25,10 +26,10 @@ void setup(void) {
 Serial.print("inicializando SD card...");
 
 if (!SD.begin(4)) {
-  Serial.println("fallo en inicialización.");
+  Serial.println("fallo en inicializacion.");
   return;
 }
-Serial.println("inicialización completada.");
+Serial.println("inicializacion completada.");
 dataFile = SD.open("data.txt", FILE_WRITE);
 
 if (dataFile)
@@ -42,12 +43,13 @@ else
 {
   Serial.println("Error al abrir data.txt");
 }
-  
+
 }
 
 void loop(void) {
   fsrReading = analogRead(fsrAnalogPin);
   Serial.println(fsrReading);
+
 
   if(fsrReading > 0 && firstTime == 0)
   {
@@ -62,29 +64,29 @@ void loop(void) {
     {
       servo1.write(0);
     }
+    digitalWrite(LEDpin, HIGH);
     dataFile = SD.open("data.txt", FILE_WRITE);
     dataFile.println(fsrReading);
     dataFile.close();
-    digitalWrite(LEDpin, HIGH);
     delay (1000);
   }
   else if(fsrReading >= 300)
-  {
+  { 
+    digitalWrite(LEDpin, LOW);
     servo1.write(servoAngle);
-    delay(1000);
+    servoAngle = 180;
     dataFile = SD.open("data.txt", FILE_WRITE);
     dataFile.println(fsrReading);
     dataFile.close();
-    digitalWrite(LEDpin, LOW);
-    servoAngle = 180;
+    delay(700);
     
   }
   else if(fsrReading > 0 && fsrReading < 100)
   {
+   digitalWrite(LEDpin, LOW);
    dataFile = SD.open("data.txt", FILE_WRITE);
    dataFile.println(fsrReading);
    dataFile.close();
-   digitalWrite(LEDpin, LOW);
    servoAngle = 180;
    servo1.write(servoAngle);
    delay(1000);
